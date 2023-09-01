@@ -1,0 +1,10 @@
+@import-normalize;
+.input {
+    padding: 10px;
+
+    margin-bottom: 15px;
+    margin-top: 5px;
+    display: block;
+    width: 300px;
+
+}
