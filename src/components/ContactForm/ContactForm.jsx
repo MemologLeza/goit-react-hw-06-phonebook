@@ -1,31 +1,31 @@
-import PropTypes from 'prop-types';
 import styled from './ContacrForm.module.css';
-import React, { useState } from 'react';
-const ContactForm = ({ createContact }) => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+import { createContact } from 'store/contacts/contactsSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { nanoid } from '@reduxjs/toolkit';
+const ContactForm = () => {
+  const { contacts } = useSelector(state => state.contacts);
+  const dispatch = useDispatch();
+  const isDuplicate = name => contacts.find(contact => contact.name === name);
 
-  const handleChangeName = ({ target: { value } }) => {
-    setName(value);
-  };
-  const handleChangeNumber = ({ target: { value } }) => {
-    setNumber(value);
-  };
-  const handleSubmit = e => {
+  const handleCreateContact = e => {
     e.preventDefault();
-    createContact(name, number); ///
-    setName('');
-    setNumber('');
+    const name = e.target.name.value;
+    const number = e.target.number.value;
+    if (isDuplicate(name)) return alert(`${name} is already in contacts(( `);
+    const newContact = {
+      id: nanoid(),
+      name,
+      number,
+    };
+    dispatch(createContact(newContact));
+    e.target.reset();
   };
-
   return (
-    <form className={styled.form} onSubmit={handleSubmit}>
+    <form className={styled.form} onSubmit={handleCreateContact}>
       <label htmlFor="name">
         Name
         <input
           className={styled.input}
-          onChange={handleChangeName}
-          value={name}
           type="text"
           name="name"
           id="name"
@@ -38,8 +38,6 @@ const ContactForm = ({ createContact }) => {
         Number
         <input
           className={styled.input}
-          onChange={handleChangeNumber}
-          value={number}
           type="tel"
           name="number"
           id="number"
@@ -56,7 +54,4 @@ const ContactForm = ({ createContact }) => {
   );
 };
 
-ContactForm.propTypes = {
-  createContact: PropTypes.func.isRequired,
-};
 export default ContactForm;
